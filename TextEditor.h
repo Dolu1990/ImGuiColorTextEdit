@@ -13,6 +13,8 @@
 class TextEditor
 {
 public:
+    static bool sEditing, sEditingLast;
+
 	enum class PaletteIndex
 	{
 		Default,
@@ -211,6 +213,7 @@ public:
 	bool IsReadOnly() const { return mReadOnly; }
 	bool IsTextChanged() const { return mTextChanged; }
 	bool IsCursorPositionChanged() const { return mCursorPositionChanged; }
+    bool isActive() const { return mActive; }
 
 	bool IsColorizerEnabled() const { return mColorizerEnabled; }
 	void SetColorizerEnable(bool aValue);
@@ -365,6 +368,7 @@ private:
 	float mTextStart;                   // position (in pixels) where a code line starts relative to the left of the TextEditor.
 	int  mLeftMargin;
 	bool mCursorPositionChanged;
+    bool mActive;
 	int mColorRangeMin, mColorRangeMax;
 	SelectionMode mSelectionMode;
 	bool mHandleKeyboardInputs;

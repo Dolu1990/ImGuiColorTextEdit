@@ -7,6 +7,11 @@
 #include "TextEditor.h"
 
 #include "imgui.h"
+#include "imgui_internal.h"
+
+
+bool TextEditor::sEditing = false;
+bool TextEditor::sEditingLast = false;
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML
@@ -37,6 +42,7 @@ TextEditor::TextEditor()
 	, mTextStart(20.0f)
 	, mLeftMargin(10)
 	, mCursorPositionChanged(false)
+    , mActive(false)
 	, mColorRangeMin(0)
 	, mColorRangeMax(0)
 	, mSelectionMode(SelectionMode::Normal)
@@ -99,11 +105,12 @@ std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & 
 			result += line[istart].mChar;
 			istart++;
 		}
-		else
+        else
 		{
 			istart = 0;
 			++lstart;
-			result += '\n';
+            if(lstart != lend)
+                result += '\n';
 		}
 	}
 
@@ -1128,6 +1135,13 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 	if (!mIgnoreImGuiChild)
 		ImGui::BeginChild(aTitle, aSize, aBorder, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NoMove);
 
+    mActive = ImGui::IsWindowFocused();
+    // ImGuiID id = ImGui::GetID(this);
+    if(mActive){
+        TextEditor::sEditing = true;
+        // ImGui::SetActiveID(id, ImGui::GetCurrentWindow());
+    }
+
 	if (mHandleKeyboardInputs)
 	{
 		HandleKeyboardInputs();
@@ -1155,20 +1169,21 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 void TextEditor::SetText(const std::string & aText)
 {
 	mLines.clear();
-	mLines.emplace_back(Line());
+    mLines.emplace_back(Line());
 	for (auto chr : aText)
 	{
 		if (chr == '\r')
 		{
 			// ignore the carriage return character
 		}
-		else if (chr == '\n')
+        else if (chr == '\n')
 			mLines.emplace_back(Line());
-		else
-		{
+        else {
 			mLines.back().emplace_back(Glyph(chr, PaletteIndex::Default));
-		}
+        }
 	}
+
+    //if(mLines.back().empty()) mLines.pop_back();
 
 	mTextChanged = true;
 	mScrollToTop = true;
