@@ -2107,6 +2107,15 @@ std::string TextEditor::GetText() const
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
 }
 
+int TextEditor::getTextSize() const{
+    int size = 0;
+    for (auto & line : mLines){
+        size += line.size() + 1;
+    }
+    size -= 1;
+    return size;
+}
+
 std::vector<std::string> TextEditor::GetTextLines() const
 {
 	std::vector<std::string> result;
