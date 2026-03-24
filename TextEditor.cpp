@@ -108,9 +108,8 @@ std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & 
         else
 		{
 			istart = 0;
-			++lstart;
-            if(lstart != lend)
-                result += '\n';
+            ++lstart;
+            result += '\n';
 		}
 	}
 
@@ -2104,7 +2103,8 @@ const TextEditor::Palette & TextEditor::GetRetroBluePalette()
 
 std::string TextEditor::GetText() const
 {
-	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
+    if(mLines.empty()) return "";
+    return GetText(Coordinates(), Coordinates((int)mLines.size()-1, mLines[mLines.size()-1].size()));
 }
 
 int TextEditor::getTextSize() const{
